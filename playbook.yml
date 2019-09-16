@@ -1,0 +1,24 @@
+---
+- hosts: web
+  roles:
+    - ansible-role-simple-webapp
+    - geerlingguy.apache
+    - geerlingguy.php-versions
+    - geerlingguy.php
+    - geerlingguy.mysql
+
+  tasks:
+    - name: Copy sql files to webserver
+      copy:
+        src: ~/awesome_friday/exercises/workshop-4/files/webapp.sql
+        dest: /tmp/webapp.sql
+        owner: root
+        group: root
+        mode: 0644
+    - name: Create database Tables
+      mysql_db:
+        name: webdb
+        login_user: '{{ simpleapp_db_user }}'
+        login_password: '{{ simpleapp_db_password }}'
+        state: import
+        target: /tmp/webapp.sql
